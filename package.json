@@ -14,7 +14,11 @@
     "build:backend": "npm run build --workspace=@soul-ink/backend",
     "build:shared": "npm run build --workspace=@soul-ink/shared",
     "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
-    "cdk": "npm run cdk --workspace=@soul-ink/backend --"
+    "cdk": "npm run cdk --workspace=@soul-ink/backend --",
+    "deploy:dev": "npm run build && npm run cdk -- deploy SoulInkDevStack",
+    "destroy:dev": "npm run cdk -- destroy SoulInkDevStack",
+    "diff:dev": "npm run build:backend && npm run cdk -- diff SoulInkDevStack",
+    "synth:dev": "npm run build:backend && npm run cdk -- synth SoulInkDevStack"
   },
   "keywords": ["notes", "monorepo"],
   "author": "",
