@@ -1,4 +1,5 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import { CORS_HEADERS } from '../utils/cors';
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log('Echo handler invoked', { event });
@@ -29,11 +30,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-      },
+      headers: CORS_HEADERS,
       body: JSON.stringify(response),
     };
   } catch (error) {
@@ -41,11 +38,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     return {
       statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-      },
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         message: 'Internal server error',
         error: error instanceof Error ? error.message : 'Unknown error',

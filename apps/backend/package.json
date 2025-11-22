@@ -16,6 +16,8 @@
     "typescript": "^5.3.0"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.936.0",
     "@soul-ink/shared": "*",
     "aws-cdk-lib": "^2.149.0",
     "constructs": "^10.3.0"
