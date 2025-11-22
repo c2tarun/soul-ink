@@ -1,0 +1,22 @@
+{
+  "name": "soul-ink",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple notes app",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=@soul-ink/frontend",
+    "dev:backend": "npm run dev --workspace=@soul-ink/backend",
+    "build:frontend": "npm run build --workspace=@soul-ink/frontend",
+    "build:backend": "npm run build --workspace=@soul-ink/backend",
+    "build:shared": "npm run build --workspace=@soul-ink/shared",
+    "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
+    "cdk": "npm run cdk --workspace=@soul-ink/backend --"
+  },
+  "keywords": ["notes", "monorepo"],
+  "author": "",
+  "license": "MIT"
+}

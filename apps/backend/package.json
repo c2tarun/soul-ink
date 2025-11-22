@@ -1,0 +1,22 @@
+{
+  "name": "@soul-ink/backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend CDK infrastructure for soul-ink",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "dev": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "aws-cdk": "^2.149.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "@soul-ink/shared": "*",
+    "aws-cdk-lib": "^2.149.0",
+    "constructs": "^10.3.0"
+  }
+}
