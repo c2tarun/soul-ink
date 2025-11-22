@@ -3,14 +3,17 @@ import type { Note, CreateNoteInput, UpdateNoteInput } from '@soul-ink/shared';
 
 interface NotesState {
   notes: Note[];
-  addNote: (input: CreateNoteInput) => void;
+  selectedNoteId: string | null;
+  addNote: (input: CreateNoteInput) => string;
   updateNote: (input: UpdateNoteInput) => void;
   deleteNote: (id: string) => void;
+  selectNote: (id: string | null) => void;
   getNote: (id: string) => Note | undefined;
 }
 
 export const useNotesStore = create<NotesState>((set, get) => ({
   notes: [],
+  selectedNoteId: null,
 
   addNote: (input: CreateNoteInput) => {
     const newNote: Note = {
@@ -20,7 +23,11 @@ export const useNotesStore = create<NotesState>((set, get) => ({
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    set((state) => ({ notes: [...state.notes, newNote] }));
+    set((state) => ({
+      notes: [newNote, ...state.notes],
+      selectedNoteId: newNote.id,
+    }));
+    return newNote.id;
   },
 
   updateNote: (input: UpdateNoteInput) => {
@@ -34,14 +41,24 @@ export const useNotesStore = create<NotesState>((set, get) => ({
               updatedAt: new Date(),
             }
           : note
-      ),
+      ).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
     }));
   },
 
   deleteNote: (id: string) => {
-    set((state) => ({
-      notes: state.notes.filter((note) => note.id !== id),
-    }));
+    set((state) => {
+      const filteredNotes = state.notes.filter((note) => note.id !== id);
+      return {
+        notes: filteredNotes,
+        selectedNoteId: state.selectedNoteId === id
+          ? (filteredNotes.length > 0 ? filteredNotes[0].id : null)
+          : state.selectedNoteId,
+      };
+    });
+  },
+
+  selectNote: (id: string | null) => {
+    set({ selectedNoteId: id });
   },
 
   getNote: (id: string) => {
