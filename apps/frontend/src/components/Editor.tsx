@@ -79,15 +79,15 @@ export function Editor() {
 
   return (
     <div className="flex-1 flex flex-col bg-white h-screen">
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200">
         <input
           type="text"
           value={title}
           onChange={handleTitleChange}
           placeholder="Note title"
-          className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none focus:outline-none focus:ring-0"
+          className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none focus:outline-none focus:ring-0 mb-4"
         />
-        <div className="mt-2 text-xs text-gray-400">
+        <div className="text-xs text-gray-400">
           Last updated: {new Date(selectedNote.updatedAt).toLocaleString()}
         </div>
       </div>

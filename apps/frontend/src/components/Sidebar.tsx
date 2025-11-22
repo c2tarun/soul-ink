@@ -23,26 +23,6 @@ export function Sidebar() {
     }
   };
 
-  const formatDate = (date: Date) => {
-    const now = new Date();
-    const noteDate = new Date(date);
-    const diffInHours = (now.getTime() - noteDate.getTime()) / (1000 * 60 * 60);
-
-    if (diffInHours < 24) {
-      return noteDate.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-      });
-    } else if (diffInHours < 168) {
-      return noteDate.toLocaleDateString('en-US', { weekday: 'short' });
-    } else {
-      return noteDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-      });
-    }
-  };
-
   const getPreview = (content: string) => {
     return content.split('\n')[0].slice(0, 60) || 'No content';
   };
@@ -80,7 +60,7 @@ export function Sidebar() {
                   : ''
               }`}
             >
-              <div className="flex justify-between items-start mb-1">
+              <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium text-gray-900 truncate flex-1">
                   {note.title || 'Untitled'}
                 </h3>
@@ -91,11 +71,8 @@ export function Sidebar() {
                   ✕
                 </button>
               </div>
-              <p className="text-sm text-gray-600 truncate mb-1">
+              <p className="text-sm text-gray-600 truncate">
                 {getPreview(note.content)}
-              </p>
-              <p className="text-xs text-gray-400">
-                {formatDate(note.updatedAt)}
               </p>
             </div>
           ))
