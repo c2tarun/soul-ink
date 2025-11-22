@@ -11,10 +11,11 @@ const env = {
   region: process.env.CDK_DEFAULT_REGION,
 };
 
-// Backend stack (for future API, DynamoDB, etc.)
-new BackendStack(app, 'SoulInkBackendStack', {
+// Backend stack - Dev environment
+new BackendStack(app, 'SoulInkBackendDevStack', {
+  environment: 'dev',
   env,
-  description: 'Backend infrastructure for Soul Ink notes app',
+  description: 'Dev backend infrastructure for Soul Ink notes app',
 });
 
 // Frontend stack - Dev environment
