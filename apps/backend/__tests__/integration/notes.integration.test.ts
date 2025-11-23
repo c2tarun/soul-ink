@@ -1,3 +1,5 @@
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import {
@@ -32,7 +34,7 @@ describe('Notes Integration Tests', () => {
 
       ddbMock.resolves({});
 
-      const response = await createHandler(event, {} as any, {} as any);
+      const response = (await createHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(201);
       const body = JSON.parse(response.body);
@@ -52,7 +54,7 @@ describe('Notes Integration Tests', () => {
         content: 'Test content',
       });
 
-      const response = await createHandler(event, {} as any, {} as any);
+      const response = (await createHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(401);
       const body = JSON.parse(response.body);
@@ -66,7 +68,7 @@ describe('Notes Integration Tests', () => {
         },
       });
 
-      const response = await createHandler(event, {} as any, {} as any);
+      const response = (await createHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -80,7 +82,7 @@ describe('Notes Integration Tests', () => {
         },
       });
 
-      const response = await createHandler(event, {} as any, {} as any);
+      const response = (await createHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -107,7 +109,7 @@ describe('Notes Integration Tests', () => {
       });
 
       const event = createMockEvent({ userId });
-      const response = await listHandler(event, {} as any, {} as any);
+      const response = (await listHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -122,7 +124,7 @@ describe('Notes Integration Tests', () => {
       });
 
       const event = createMockEvent({ userId: 'user-no-notes' });
-      const response = await listHandler(event, {} as any, {} as any);
+      const response = (await listHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -131,7 +133,7 @@ describe('Notes Integration Tests', () => {
 
     it('should return 401 when userId is missing', async () => {
       const event = createUnauthorizedEvent();
-      const response = await listHandler(event, {} as any, {} as any);
+      const response = (await listHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(401);
       const body = JSON.parse(response.body);
@@ -156,7 +158,7 @@ describe('Notes Integration Tests', () => {
         userId,
         pathParameters: { id: noteId },
       });
-      const response = await getHandler(event, {} as any, {} as any);
+      const response = (await getHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -174,7 +176,7 @@ describe('Notes Integration Tests', () => {
         userId: 'user123',
         pathParameters: { id: 'nonexistent' },
       });
-      const response = await getHandler(event, {} as any, {} as any);
+      const response = (await getHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(404);
       const body = JSON.parse(response.body);
@@ -186,7 +188,7 @@ describe('Notes Integration Tests', () => {
         userId: 'user123',
         pathParameters: {},
       });
-      const response = await getHandler(event, {} as any, {} as any);
+      const response = (await getHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -196,7 +198,7 @@ describe('Notes Integration Tests', () => {
     it('should return 401 when userId is missing', async () => {
       const event = createUnauthorizedEvent();
       event.pathParameters = { id: 'note123' };
-      const response = await getHandler(event, {} as any, {} as any);
+      const response = (await getHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(401);
       const body = JSON.parse(response.body);
@@ -228,7 +230,7 @@ describe('Notes Integration Tests', () => {
           content: 'New Content',
         },
       });
-      const response = await updateHandler(event, {} as any, {} as any);
+      const response = (await updateHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -259,7 +261,7 @@ describe('Notes Integration Tests', () => {
           title: 'New Title',
         },
       });
-      const response = await updateHandler(event, {} as any, {} as any);
+      const response = (await updateHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -289,7 +291,7 @@ describe('Notes Integration Tests', () => {
           content: 'New Content',
         },
       });
-      const response = await updateHandler(event, {} as any, {} as any);
+      const response = (await updateHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(200);
       const body = JSON.parse(response.body);
@@ -307,7 +309,7 @@ describe('Notes Integration Tests', () => {
         pathParameters: { id: 'nonexistent' },
         body: { title: 'New Title' },
       });
-      const response = await updateHandler(event, {} as any, {} as any);
+      const response = (await updateHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(404);
       const body = JSON.parse(response.body);
@@ -320,7 +322,7 @@ describe('Notes Integration Tests', () => {
         pathParameters: { id: 'note123' },
         body: {},
       });
-      const response = await updateHandler(event, {} as any, {} as any);
+      const response = (await updateHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -333,7 +335,7 @@ describe('Notes Integration Tests', () => {
       const event = createUnauthorizedEvent();
       event.pathParameters = { id: 'note123' };
       event.body = JSON.stringify({ title: 'New Title' });
-      const response = await updateHandler(event, {} as any, {} as any);
+      const response = (await updateHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(401);
       const body = JSON.parse(response.body);
@@ -349,7 +351,7 @@ describe('Notes Integration Tests', () => {
         userId: 'user123',
         pathParameters: { id: 'note123' },
       });
-      const response = await deleteHandler(event, {} as any, {} as any);
+      const response = (await deleteHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(204);
       expect(response.body).toBe('');
@@ -360,7 +362,7 @@ describe('Notes Integration Tests', () => {
         userId: 'user123',
         pathParameters: {},
       });
-      const response = await deleteHandler(event, {} as any, {} as any);
+      const response = (await deleteHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
@@ -370,7 +372,7 @@ describe('Notes Integration Tests', () => {
     it('should return 401 when userId is missing', async () => {
       const event = createUnauthorizedEvent();
       event.pathParameters = { id: 'note123' };
-      const response = await deleteHandler(event, {} as any, {} as any);
+      const response = (await deleteHandler(event, {} as any, {} as any)) as APIGatewayProxyResult;
 
       expect(response.statusCode).toBe(401);
       const body = JSON.parse(response.body);
@@ -393,11 +395,11 @@ describe('Notes Integration Tests', () => {
           content: 'Initial content',
         },
       });
-      const createResponse = await createHandler(
+      const createResponse = (await createHandler(
         createEvent,
         {} as any,
         {} as any
-      );
+      )) as APIGatewayProxyResult;
       expect(createResponse.statusCode).toBe(201);
       createdNoteId = JSON.parse(createResponse.body).note.id;
 
@@ -411,7 +413,7 @@ describe('Notes Integration Tests', () => {
         Items: [testNote],
       });
       const listEvent = createMockEvent({ userId });
-      const listResponse = await listHandler(listEvent, {} as any, {} as any);
+      const listResponse = (await listHandler(listEvent, {} as any, {} as any)) as APIGatewayProxyResult;
       expect(listResponse.statusCode).toBe(200);
       const listBody = JSON.parse(listResponse.body);
       expect(listBody.notes).toHaveLength(1);
@@ -426,7 +428,7 @@ describe('Notes Integration Tests', () => {
         userId,
         pathParameters: { id: createdNoteId },
       });
-      const getResponse = await getHandler(getEvent, {} as any, {} as any);
+      const getResponse = (await getHandler(getEvent, {} as any, {} as any)) as APIGatewayProxyResult;
       expect(getResponse.statusCode).toBe(200);
       const getBody = JSON.parse(getResponse.body);
       expect(getBody.note.title).toBe('Flow Test Note');
@@ -446,11 +448,11 @@ describe('Notes Integration Tests', () => {
           title: 'Updated Title',
         },
       });
-      const updateResponse = await updateHandler(
+      const updateResponse = (await updateHandler(
         updateEvent,
         {} as any,
         {} as any
-      );
+      )) as APIGatewayProxyResult;
       expect(updateResponse.statusCode).toBe(200);
       const updateBody = JSON.parse(updateResponse.body);
       expect(updateBody.note.title).toBe('Updated Title');
@@ -462,11 +464,11 @@ describe('Notes Integration Tests', () => {
         userId,
         pathParameters: { id: createdNoteId },
       });
-      const deleteResponse = await deleteHandler(
+      const deleteResponse = (await deleteHandler(
         deleteEvent,
         {} as any,
         {} as any
-      );
+      )) as APIGatewayProxyResult;
       expect(deleteResponse.statusCode).toBe(204);
     });
   });

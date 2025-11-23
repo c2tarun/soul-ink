@@ -1,16 +1,8 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  GetCommand,
-  PutCommand,
-} from '@aws-sdk/lib-dynamodb';
 import { CORS_HEADERS } from '../../utils/cors';
+import { NotesRepository } from '../../repositories/NotesRepository';
 
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = process.env.TABLE_NAME!;
+const notesRepo = new NotesRepository();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log('Update note handler invoked', { event });
@@ -51,18 +43,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    // Get existing note to verify ownership and get current data
-    const existing = await docClient.send(
-      new GetCommand({
-        TableName: TABLE_NAME,
-        Key: {
-          PK: `USER#${userId}`,
-          SK: `NOTE#${noteId}`,
-        },
-      })
-    );
+    const note = await notesRepo.updateNote(userId, noteId, { title, content });
 
-    if (!existing.Item) {
+    if (!note) {
       return {
         statusCode: 404,
         headers: CORS_HEADERS,
@@ -70,37 +53,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    // Update note
-    const now = new Date().toISOString();
-
-    const updatedNote = {
-      ...existing.Item,
-      title: title !== undefined ? title : existing.Item.title,
-      content: content !== undefined ? content : existing.Item.content,
-      updatedAt: now,
-      GSI_SK: `${now}#${noteId}`, // Update GSI sort key with new timestamp
-    };
-
-    await docClient.send(
-      new PutCommand({
-        TableName: TABLE_NAME,
-        Item: updatedNote,
-      })
-    );
-
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify({
-        note: {
-          id: existing.Item.id,
-          userId: existing.Item.userId,
-          title: updatedNote.title,
-          content: updatedNote.content,
-          createdAt: existing.Item.createdAt,
-          updatedAt: updatedNote.updatedAt,
-        },
-      }),
+      body: JSON.stringify({ note }),
     };
   } catch (error) {
     console.error('Update note error:', error);

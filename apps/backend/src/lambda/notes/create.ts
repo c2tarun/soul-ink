@@ -1,13 +1,9 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { randomUUID } from 'crypto';
 import { CORS_HEADERS } from '../../utils/cors';
+import { NotesRepository } from '../../repositories/NotesRepository';
 
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = process.env.TABLE_NAME!;
+const notesRepo = new NotesRepository();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log('Create note handler invoked', { event });
@@ -37,41 +33,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     // Create note
     const noteId = randomUUID();
-    const now = new Date().toISOString();
-
-    const note = {
-      PK: `USER#${userId}`,
-      SK: `NOTE#${noteId}`,
-      GSI_PK: `USER#${userId}`,
-      GSI_SK: `${now}#${noteId}`,
-      id: noteId,
-      userId,
-      title,
-      content,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    await docClient.send(
-      new PutCommand({
-        TableName: TABLE_NAME,
-        Item: note,
-      })
-    );
+    const note = await notesRepo.createNote(userId, noteId, title, content);
 
     return {
       statusCode: 201,
       headers: CORS_HEADERS,
-      body: JSON.stringify({
-        note: {
-          id: note.id,
-          userId: note.userId,
-          title: note.title,
-          content: note.content,
-          createdAt: note.createdAt,
-          updatedAt: note.updatedAt,
-        },
-      }),
+      body: JSON.stringify({ note }),
     };
   } catch (error) {
     console.error('Create note error:', error);

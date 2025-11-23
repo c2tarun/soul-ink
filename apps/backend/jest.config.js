@@ -9,4 +9,13 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'js', 'json'],
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: {
+        types: ['jest', 'node'],
+        esModuleInterop: true,
+        skipLibCheck: true,
+      },
+    }],
+  },
 };

@@ -1,12 +1,8 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { CORS_HEADERS } from '../../utils/cors';
+import { NotesRepository } from '../../repositories/NotesRepository';
 
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = process.env.TABLE_NAME!;
+const notesRepo = new NotesRepository();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log('Get note handler invoked', { event });
@@ -32,33 +28,15 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    // Get item from DynamoDB
-    const result = await docClient.send(
-      new GetCommand({
-        TableName: TABLE_NAME,
-        Key: {
-          PK: `USER#${userId}`,
-          SK: `NOTE#${noteId}`,
-        },
-      })
-    );
+    const note = await notesRepo.getNote(userId, noteId);
 
-    if (!result.Item) {
+    if (!note) {
       return {
         statusCode: 404,
         headers: CORS_HEADERS,
         body: JSON.stringify({ message: 'Note not found' }),
       };
     }
-
-    const note = {
-      id: result.Item.id,
-      userId: result.Item.userId,
-      title: result.Item.title,
-      content: result.Item.content,
-      createdAt: result.Item.createdAt,
-      updatedAt: result.Item.updatedAt,
-    };
 
     return {
       statusCode: 200,

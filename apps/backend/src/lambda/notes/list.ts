@@ -1,12 +1,8 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { CORS_HEADERS } from '../../utils/cors';
+import { NotesRepository } from '../../repositories/NotesRepository';
 
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = process.env.TABLE_NAME!;
+const notesRepo = new NotesRepository();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log('List notes handler invoked', { event });
@@ -22,28 +18,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    // Query GSI to get notes sorted by updatedAt
-    const result = await docClient.send(
-      new QueryCommand({
-        TableName: TABLE_NAME,
-        IndexName: 'ByUpdatedAt',
-        KeyConditionExpression: 'GSI_PK = :pk',
-        ExpressionAttributeValues: {
-          ':pk': `USER#${userId}`,
-        },
-        ScanIndexForward: false, // Sort descending (most recent first)
-      })
-    );
-
-    // Transform DynamoDB items to Note format
-    const notes = (result.Items || []).map((item) => ({
-      id: item.id,
-      userId: item.userId,
-      title: item.title,
-      content: item.content,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    }));
+    const notes = await notesRepo.listNotes(userId);
 
     return {
       statusCode: 200,

@@ -1,12 +1,8 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { CORS_HEADERS } from '../../utils/cors';
+import { NotesRepository } from '../../repositories/NotesRepository';
 
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const TABLE_NAME = process.env.TABLE_NAME!;
+const notesRepo = new NotesRepository();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log('Delete note handler invoked', { event });
@@ -32,16 +28,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    // Delete item from DynamoDB
-    await docClient.send(
-      new DeleteCommand({
-        TableName: TABLE_NAME,
-        Key: {
-          PK: `USER#${userId}`,
-          SK: `NOTE#${noteId}`,
-        },
-      })
-    );
+    await notesRepo.deleteNote(userId, noteId);
 
     return {
       statusCode: 204,
